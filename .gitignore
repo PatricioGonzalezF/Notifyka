@@ -1,0 +1,73 @@
+# ==========================================================================
+#  Notify — .gitignore  (proyecto Flutter)
+#  Base: plantilla oficial de `flutter create` + exclusiones de este equipo.
+# ==========================================================================
+
+# --- Miscelánea --------------------------------------------------------
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# --- IntelliJ / Android Studio / VS Code -----------------------------
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# --- Flutter / Dart / Pub -------------------------------------------
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+# NOTA: pubspec.lock SÍ se versiona en una app.
+
+# Símbolos / ofuscación
+app.*.symbols
+app.*.map.json
+
+# --- Android ---------------------------------------------------------
+/android/app/debug
+/android/app/profile
+/android/app/release
+android/.gradle/
+android/.kotlin/
+android/captures/
+android/local.properties          # rutas absolutas a TU SDK
+android/key.properties            # credenciales de firma
+*.jks
+*.keystore
+
+# --- iOS -----------------------------------------------------------
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/xcuserdata/
+**/DerivedData/
+
+# --- Andamiaje de generación (mejor borrarlo del repo) --------------
+/_overlay/
+/flutter/
+/bootstrap.ps1
+/bootstrap.sh
+/scratchpad/

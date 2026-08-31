@@ -1,0 +1,859 @@
+<!-- content only; wrapped at publish -->
+<title>Bitácora de Notify</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --bg: #f7f7fb;
+    --surface: #ffffff;
+    --surface-2: #f0f0f6;
+    --ink: #1b1b23;
+    --ink-2: #55556a;
+    --ink-3: #8a8a9c;
+    --border: #e4e4ec;
+    --border-strong: #d3d3df;
+    --accent: #4f46e5;
+    --accent-ink: #4036c9;
+    --accent-soft: #ebeafb;
+    --good: #15803d;
+    --good-ink: #0f6b32;
+    --good-soft: #e7f4ec;
+    --bad: #c2410c;
+    --bad-ink: #b23b0b;
+    --bad-soft: #fbebe1;
+    --warn: #b45309;
+    --warn-soft: #f8efe1;
+    --shadow: 0 1px 2px rgba(20, 20, 40, .04), 0 8px 24px -12px rgba(20, 20, 40, .12);
+
+    --step--1: .8125rem;
+    --step-0: 1rem;
+    --step-1: 1.1875rem;
+    --step-2: 1.5rem;
+    --step-3: 2rem;
+    --step-4: 2.6rem;
+
+    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+    --maxw: 46rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121218;
+      --surface: #1c1c24;
+      --surface-2: #24242e;
+      --ink: #e9e9f1;
+      --ink-2: #a8a8ba;
+      --ink-3: #74748a;
+      --border: #2e2e3a;
+      --border-strong: #3b3b49;
+      --accent: #8b85f2;
+      --accent-ink: #aca7f8;
+      --accent-soft: #23233a;
+      --good: #4ade80;
+      --good-ink: #6ee79a;
+      --good-soft: #17281d;
+      --bad: #fb923c;
+      --bad-ink: #fca35a;
+      --bad-soft: #2c1d13;
+      --warn: #fbbf24;
+      --warn-soft: #2a2112;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -14px rgba(0, 0, 0, .6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #121218;
+    --surface: #1c1c24;
+    --surface-2: #24242e;
+    --ink: #e9e9f1;
+    --ink-2: #a8a8ba;
+    --ink-3: #74748a;
+    --border: #2e2e3a;
+    --border-strong: #3b3b49;
+    --accent: #8b85f2;
+    --accent-ink: #aca7f8;
+    --accent-soft: #23233a;
+    --good: #4ade80;
+    --good-ink: #6ee79a;
+    --good-soft: #17281d;
+    --bad: #fb923c;
+    --bad-ink: #fca35a;
+    --bad-soft: #2c1d13;
+    --warn: #fbbf24;
+    --warn-soft: #2a2112;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -14px rgba(0, 0, 0, .6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 1.4rem 6rem;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: .6rem 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .topbar .mark {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: var(--step--1);
+    letter-spacing: .02em;
+    color: var(--ink);
+    margin-right: auto;
+  }
+  .topbar .mark span { color: var(--accent-ink); }
+  .navpill {
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink-2);
+    padding: .3rem .6rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .navpill:hover { color: var(--ink); background: var(--surface-2); }
+  .themebtn {
+    font: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--ink-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: .3rem .7rem;
+    line-height: 1;
+  }
+  .themebtn:hover { color: var(--ink); }
+
+  /* ---------- header ---------- */
+  header.page {
+    padding: 3.4rem 0 2.2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.6rem;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent-ink);
+    margin: 0 0 1rem;
+  }
+  h1 {
+    font-size: var(--step-4);
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    margin: 0 0 .9rem;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: var(--step-1);
+    color: var(--ink-2);
+    margin: 0;
+    max-width: 34rem;
+  }
+  .meta {
+    margin-top: 1.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem .5rem;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .chip {
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: .22rem .6rem;
+    color: var(--ink-2);
+    background: var(--surface);
+  }
+  .chip.ok { color: var(--good-ink); border-color: color-mix(in srgb, var(--good) 40%, var(--border)); background: var(--good-soft); }
+  .chip.pending { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); background: var(--warn-soft); }
+
+  /* ---------- sections ---------- */
+  section { margin-bottom: 3.6rem; scroll-margin-top: 4.5rem; }
+  .sec-head { margin: 0 0 1.4rem; }
+  .sec-num {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--accent-ink);
+    letter-spacing: .06em;
+  }
+  h2 {
+    font-size: var(--step-3);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -.015em;
+    margin: .2rem 0 0;
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: var(--step-1);
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin: 2.4rem 0 .8rem;
+  }
+  h4 {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin: 1.6rem 0 .5rem;
+  }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: .875em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: .08em .38em;
+    word-break: break-word;
+  }
+  strong { font-weight: 600; }
+
+  ul, ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+  li { margin-bottom: .45rem; }
+  li::marker { color: var(--ink-3); }
+
+  /* ---------- code block ---------- */
+  .code {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .95rem 1.1rem;
+    margin: 0 0 1.2rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .code .c { color: var(--ink-3); }
+  .code .p { color: var(--accent-ink); }
+
+  /* ---------- callout ---------- */
+  .note {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: .9rem 1.1rem;
+    margin: 0 0 1.4rem;
+    font-size: var(--step--1);
+    color: var(--ink-2);
+  }
+  .note strong { color: var(--ink); }
+
+  /* ---------- file table ---------- */
+  .tablewrap { overflow-x: auto; margin: 0 0 1.4rem; border: 1px solid var(--border); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  th, td { text-align: left; padding: .62rem .85rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: .72rem;
+    color: var(--ink-3);
+    background: var(--surface-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td code { background: transparent; border: 0; padding: 0; color: var(--accent-ink); }
+  .yes { color: var(--good-ink); font-weight: 600; }
+  .no { color: var(--bad-ink); font-weight: 600; }
+
+  /* ---------- two-column commit lists ---------- */
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+  }
+  @media (min-width: 40rem) { .cols { grid-template-columns: 1fr 1fr; } }
+  .listcard {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 1rem 1.1rem 1.1rem;
+  }
+  .listcard h4 { margin-top: 0; display: flex; align-items: center; gap: .5rem; }
+  .listcard .tag {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    padding: .16rem .45rem;
+    border-radius: 5px;
+  }
+  .tag.commit { background: var(--good-soft); color: var(--good-ink); }
+  .tag.ignore { background: var(--bad-soft); color: var(--bad-ink); }
+  .listcard ul { padding-left: 1.1rem; margin-bottom: 0; }
+  .listcard li { font-size: var(--step--1); }
+  .listcard code { font-size: .82em; }
+
+  /* ---------- timeline ---------- */
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline > li {
+    position: relative;
+    padding-left: 2.4rem;
+    padding-bottom: 1.8rem;
+    margin-bottom: 0;
+  }
+  .timeline > li::before {
+    content: attr(data-n);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .timeline > li::after {
+    content: "";
+    position: absolute;
+    left: .82rem;
+    top: 1.9rem;
+    bottom: .1rem;
+    width: 1px;
+    background: var(--border-strong);
+  }
+  .timeline > li:last-child::after { display: none; }
+  .timeline .t-title { font-weight: 600; margin: .1rem 0 .3rem; }
+  .timeline p { font-size: var(--step--1); color: var(--ink-2); margin-bottom: .5rem; }
+  .timeline p:last-child { margin-bottom: 0; }
+  .fix {
+    font-size: var(--step--1);
+    color: var(--ink);
+    background: var(--good-soft);
+    border: 1px solid color-mix(in srgb, var(--good) 30%, var(--border));
+    border-radius: 7px;
+    padding: .5rem .7rem;
+    margin-top: .5rem;
+  }
+  .fix b { color: var(--good-ink); font-family: var(--font-mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; margin-right: .4rem; }
+  .errcode {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    background: var(--bad-soft);
+    color: var(--bad-ink);
+    border-radius: 5px;
+    padding: .05rem .4rem;
+    margin: .1rem 0;
+  }
+
+  /* ---------- improvements ---------- */
+  .imp-group { margin-bottom: 1.8rem; }
+  .imp-group > h3 {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+    margin-bottom: .8rem;
+    padding-bottom: .4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .imp-group > h3 .k {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--ink-3);
+    font-weight: 400;
+  }
+  .imp { border: 1px solid var(--border); border-radius: 9px; background: var(--surface); padding: .85rem 1rem; margin-bottom: .7rem; }
+  .imp .imp-top { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-bottom: .3rem; }
+  .imp .imp-name { font-weight: 600; font-size: var(--step-0); }
+  .imp .prio {
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: .13rem .45rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    color: var(--ink-2);
+  }
+  .prio.alta { background: var(--accent-soft); color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+  .prio.media { background: var(--surface-2); }
+  .prio.baja { background: transparent; color: var(--ink-3); }
+  .imp p { font-size: var(--step--1); color: var(--ink-2); margin: 0; }
+  .imp .ref { color: var(--ink-3); }
+  .imp .ref b { color: var(--ink-2); font-weight: 600; }
+
+  /* ---------- sources ---------- */
+  .sources { margin-top: 3rem; padding-top: 1.4rem; border-top: 1px solid var(--border); font-size: var(--step--1); color: var(--ink-3); }
+  .sources ul { padding-left: 1.1rem; }
+  .sources a { color: var(--ink-2); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="mark">notify · <span>bitácora</span></span>
+    <a class="navpill" href="#github">GitHub</a>
+    <a class="navpill" href="#pasos">Paso a paso</a>
+    <a class="navpill" href="#mejoras">Mejoras</a>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Cambiar tema">tema</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="page">
+    <p class="eyebrow">Notas de voz · Flutter · registro de trabajo</p>
+    <h1>Bitácora de Notify</h1>
+    <p class="lede">Qué subir al repositorio, todo lo que se hizo para que la app compile y transcriba, y una hoja de ruta de mejoras basada en apps de referencia.</p>
+    <div class="meta">
+      <span class="chip">Flutter 3.47.2</span>
+      <span class="chip">Android · API 24–36</span>
+      <span class="chip ok">Compila y corre</span>
+      <span class="chip pending">Transcripción: verificar en dispositivo</span>
+    </div>
+  </header>
+
+  <!-- ============ SECCIÓN 1 ============ -->
+  <section id="github">
+    <div class="sec-head">
+      <span class="sec-num">A</span>
+      <h2>Rehacer el repositorio con GitHub Desktop</h2>
+    </div>
+
+    <p>Revisado <code>github.com/PatricioGonzalezF/Notify</code> (privado, 3 commits). El repo actual <strong>no se puede "actualizar" archivo por archivo</strong> — su estructura está mal y hay que rehacerla. El diagnóstico:</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Qué hay hoy en el repo</th><th>Qué pasa</th></tr></thead>
+        <tbody>
+          <tr><td><code>flutter/</code></td><td class="no">Se subió el <strong>SDK completo de Flutter</strong> — cientos de MB, miles de archivos (<code>bin/</code>, <code>dev/</code>, <code>AUTHORS</code>, <code>CHANGELOG.md</code>…). Nunca debe estar en tu repo.</td></tr>
+          <tr><td><code>_overlay/</code></td><td class="no">El código de la app <strong>antes de todos los arreglos</strong> (versión del inicio de la sesión 1). No compila con el entorno actual.</td></tr>
+          <tr><td><code>bootstrap.ps1</code> · <code>bootstrap.sh</code></td><td class="no">Andamiaje de generación. No es código de la app.</td></tr>
+          <tr><td><code>README.md</code></td><td class="no">Versión vieja («este entorno no tiene Flutter instalado… no pudo compilarse»).</td></tr>
+          <tr><td><em>(raíz)</em></td><td class="no">No hay proyecto en la raíz: ni <code>lib/</code>, ni <code>pubspec.yaml</code>, ni <code>android/</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note"><strong>Conclusión:</strong> conviene <strong>historia limpia</strong>. Es privado, solo 3 commits, y arrastra el SDK entero — si lo dejas así, cuando lo hagas público se verá mal y tardará una eternidad en clonarse. Mejor arreglarlo ahora. El proyecto real ya está limpio y pesa <strong>3,9&nbsp;MB</strong> en <code>…\Escritorio\claudito el codi\notify\</code>.</div>
+
+    <h3>El plan · una acción en la web + GitHub Desktop</h3>
+    <ol class="timeline">
+      <li data-n="1">
+        <p class="t-title">Web · borra el repositorio</p>
+        <p>En <code>github.com/PatricioGonzalezF/Notify</code> → <em>Settings</em> → al final, <em>Danger Zone</em> → <em>Delete this repository</em> → escribe <code>PatricioGonzalezF/Notify</code> para confirmar. <span class="ref">(El texto de «About» te lo dejo abajo para reusarlo.)</span></p>
+      </li>
+      <li data-n="2">
+        <p class="t-title">Explorador · mueve el proyecto</p>
+        <p><strong>Mueve toda la carpeta</strong> <code>…\Escritorio\claudito el codi\notify\</code> a una ruta corta sin OneDrive: <code>C:\dev\notify\</code> (crea <code>C:\dev</code> si no existe).</p>
+        <div class="fix"><b>ok</b>La carpeta ya quedó lista: se hizo <code>flutter clean</code> (sin <code>build\</code> ni <code>.dart_tool\</code>) y se borraron <code>_overlay\</code>, <code>bootstrap.*</code>, <code>.idea\</code> y los <code>.iml</code>. Pesa 3,7&nbsp;MB — mover es instantáneo.</div>
+      </li>
+      <li data-n="3">
+        <p class="t-title">Explorador · borra el clon roto</p>
+        <p>Elimina la carpeta <code>C:\Users\H-\Documents\GitHub\Notify\</code> completa (es el clon viejo con el SDK dentro).</p>
+      </li>
+      <li data-n="4">
+        <p class="t-title">GitHub Desktop · quita el repo viejo de la lista</p>
+        <p>Selector de repos (arriba a la izquierda) → clic derecho en <em>Notify</em> → <em>Remove…</em> → <em>Remove</em>.</p>
+      </li>
+      <li data-n="5">
+        <p class="t-title">GitHub Desktop · crea el repo desde la carpeta real</p>
+        <p><em>File → Add local repository</em> → elige <code>C:\dev\notify</code>. Dirá que no parece un repositorio git y ofrecerá <strong>Create a Repository</strong> → clic. En el diálogo: <em>Name</em> <code>Notify</code>, <em>Git ignore</em> = <strong>None</strong> (ya tienes el tuyo), <em>License</em> = None → <strong>Create repository</strong>.</p>
+      </li>
+      <li data-n="6">
+        <p class="t-title">GitHub Desktop · revisa y commitea</p>
+        <p>En el panel <em>Changes</em> verás el proyecto. <strong>Confirma que NO aparezcan</strong> <code>build/</code>, <code>.dart_tool/</code>, <code>android/local.properties</code>, <code>flutter/</code>, <code>_overlay/</code>. Si sale alguno, el <code>.gitignore</code> no se movió con la carpeta.<br>
+        <em>Summary</em>: <code>Notify: MVP funcional (voz, transcripcion, SQLite, recordatorios)</code> → <strong>Commit to main</strong>.</p>
+      </li>
+      <li data-n="7">
+        <p class="t-title">GitHub Desktop · publica</p>
+        <p>Botón <strong>Publish repository</strong> (arriba). <strong>Deja marcado «Keep this code private».</strong> <em>Organization</em>: tu cuenta → <strong>Publish repository</strong>. Repo nuevo, privado, historia limpia, solo el proyecto real.</p>
+      </li>
+      <li data-n="8">
+        <p class="t-title">Regenera lo local</p>
+        <p>En <code>C:\dev\notify</code> corre <code>flutter pub get</code> (desde una terminal o al abrir el proyecto en Android Studio). Recrea <code>.dart_tool/</code> y deja listo <code>android/local.properties</code> — ambos se quedan en tu equipo, no se suben.</p>
+      </li>
+    </ol>
+
+    <h3>Estado objetivo · lo que el repo debe contener (~85 archivos)</h3>
+    <div class="code">Notify/
+├─ .gitignore · .metadata · README.md · ESTADO.md · analysis_options.yaml
+├─ pubspec.yaml · pubspec.lock          <span class="c"># el lock SÍ se versiona</span>
+├─ docs/bitacora.html
+├─ lib/                                 <span class="c"># TODO el código de la app</span>
+│  ├─ main.dart
+│  ├─ models/note.dart
+│  ├─ screens/  home_screen.dart · record_screen.dart · note_detail_screen.dart
+│  ├─ services/ database_service.dart · audio_service.dart
+│  │            speech_service.dart · notification_service.dart
+│  └─ widgets/  note_list_item.dart · pulsing_mic.dart
+├─ test/widget_test.dart
+├─ android/                             <span class="c"># sin .gradle/ .kotlin/ local.properties</span>
+│  ├─ .gitignore · build.gradle.kts · gradle.properties · settings.gradle.kts
+│  ├─ gradle/wrapper/ · gradlew · gradlew.bat
+│  └─ app/  build.gradle.kts · src/main/(AndroidManifest.xml · MainActivity.kt · res/)
+└─ ios/                                 <span class="c"># sin Pods/ Generated.xcconfig …</span>
+   └─ .gitignore · Flutter/ · Runner/ · Runner.xcodeproj/ · RunnerTests/</div>
+
+    <h3>Qué NUNCA subir</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Ruta</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td><code>flutter/</code></td><td class="no">el SDK de Flutter — se instala aparte, no va en el repo</td></tr>
+          <tr><td><code>build/</code> · <code>.dart_tool/</code></td><td class="no">compilación y caché, se regeneran solos</td></tr>
+          <tr><td><code>android/.gradle/</code> · <code>android/.kotlin/</code></td><td class="no">caché de Gradle</td></tr>
+          <tr><td><code>android/local.properties</code></td><td class="no">rutas ABSOLUTAS a tu SDK (<code>C:\src\flutter</code>…) — rompe el build de otros</td></tr>
+          <tr><td><code>ios/Flutter/Generated.xcconfig</code><br><code>ios/Flutter/flutter_export_environment.sh</code></td><td class="no">generados con rutas de tu equipo</td></tr>
+          <tr><td><code>.idea/</code> · <code>*.iml</code></td><td class="no">config de IDE, personal</td></tr>
+          <tr><td><code>_overlay/</code> · <code>bootstrap.*</code></td><td>andamiaje; el <code>.gitignore</code> ya los excluye</td></tr>
+          <tr><td><code>*.jks</code> · <code>*.keystore</code> · <code>android/key.properties</code></td><td class="no">claves de firma — <strong>jamás</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note"><strong>Texto para «About» del repo</strong> (el que tenías, con «PWA» → «app»):<br>
+    <em>App móvil de notas por voz: captura tus ideas, tareas y compromisos tan rápido como los piensas. Convierte tu voz en notas organizadas y recordatorios, sin tocar el teclado. Pensada para profesionales, estudiantes y mentes activas.</em></div>
+
+    <div class="note"><strong>Alternativa sin borrar el repo</strong> (conserva URL, descripción, issues): tras el paso 6, <em>Repository → Repository settings → Remote</em> → pega <code>https://github.com/PatricioGonzalezF/Notify.git</code>. Luego <em>Repository → Push</em>; fallará por historias divergentes → <em>Repository → Force push origin</em>. Sobrescribe el remoto con tu historia limpia. Es más frágil en la interfaz; si dudas, usa el borrado del paso 1.</div>
+  </section>
+
+  <!-- ============ SECCIÓN 2 ============ -->
+  <section id="pasos">
+    <div class="sec-head">
+      <span class="sec-num">B</span>
+      <h2>Qué se hizo, paso a paso</h2>
+    </div>
+
+    <p>El trabajo tuvo dos fases: <strong>Sesión&nbsp;1</strong>, lograr que el proyecto compilara para Android; y <strong>Sesión&nbsp;2</strong>, arreglar y robustecer la transcripción de voz.</p>
+
+    <h3>Sesión 1 · Lograr que compile</h3>
+
+    <p><strong>Punto de partida.</strong> Flutter no estaba instalado. Se generó todo el código fuente (modelo <code>Note</code>, servicios de base de datos / audio / voz / notificaciones, tres pantallas, dos widgets), el <code>pubspec.yaml</code>, el <code>AndroidManifest.xml</code> con permisos y el <code>Info.plist</code> de iOS.</p>
+
+    <p><strong>Instalación del entorno.</strong> Flutter 3.47.2 <em>stable</em> en <code>C:\src\flutter</code> (primero se clonó por error dentro del propio proyecto; esa copia parcial y rota se borró). Android Studio 2026.1 + SDK. Aceptar licencias. El <code>sdkmanager</code> del SDK no estaba: se instalaron los <em>command-line tools</em> desde el SDK Manager de Android Studio.</p>
+
+    <p><strong>Generación.</strong> El script <code>bootstrap</code> ejecuta <code>flutter create</code> (crea <code>android/</code> e <code>ios/</code>), copia el código encima y hace <code>flutter pub get</code>.</p>
+
+    <h4>Cadena de errores de compilación, resueltos uno a uno</h4>
+    <ol class="timeline">
+      <li data-n="1">
+        <p class="t-title">Plugin de Kotlin ausente</p>
+        <p>La plantilla de Flutter 3.47 genera <code>android/app/build.gradle.kts</code> con el bloque <code>kotlin { compilerOptions { … } }</code> pero <strong>no aplica</strong> el plugin de Kotlin. <span class="errcode">Unresolved reference 'compilerOptions'</span></p>
+        <div class="fix"><b>fix</b>Añadir <code>id("org.jetbrains.kotlin.android")</code> al bloque <code>plugins {}</code>.</div>
+      </li>
+      <li data-n="2">
+        <p class="t-title">Core library desugaring</p>
+        <p><code>flutter_local_notifications</code> 18 necesita <em>desugaring</em> de las APIs modernas de Java para poder correr en Android antiguos.</p>
+        <div class="fix"><b>fix</b><code>compileOptions { isCoreLibraryDesugaringEnabled = true }</code> + <code>dependencies { coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4") }</code></div>
+      </li>
+      <li data-n="3">
+        <p class="t-title">El binario <code>android.exe</code> del SDK crashea</p>
+        <p>El auto-descargador de componentes de AGP&nbsp;9.1 invoca <code>android.exe</code> (SDK de Android Studio canary), que en este equipo hace <em>stack buffer overrun</em>. <span class="errcode">exit -1073740791 (0xC0000409)</span></p>
+        <div class="fix"><b>fix</b><code>android/gradle.properties</code> → <code>android.builder.sdkDownload=false</code>, para que AGP no lo llame. Los componentes se instalan a mano (pasos 4–6).</div>
+      </li>
+      <li data-n="4">
+        <p class="t-title">NDK <code>28.2.13676358</code> no instalado</p>
+        <p>Lo exigen <code>speech_to_text</code> y <code>jni</code> (dependencia nativa de <code>record</code>). <span class="errcode">NDK not configured. Preferred NDK version is '28.2.13676358'</span></p>
+        <div class="fix"><b>fix</b>Como <code>sdkmanager</code> fallaba, se descargó el ZIP oficial <code>android-ndk-r28c-windows.zip</code> (748&nbsp;MB) y se extrajo en <code>Sdk/ndk/28.2.13676358/</code>.</div>
+      </li>
+      <li data-n="5">
+        <p class="t-title">Plataformas Android 34 y 35 no instaladas</p>
+        <p><code>flutter_local_notifications</code> compila contra API&nbsp;34; <code>jni</code> contra API&nbsp;35. <span class="errcode">Failed to find target with hash string 'android-34'</span></p>
+        <div class="fix"><b>fix</b><code>android.exe sdk install "platforms/android-34"</code> y <code>"platforms/android-35"</code> — los paquetes chicos sí entraban por esa vía.</div>
+      </li>
+      <li data-n="6">
+        <p class="t-title">CMake 3.22.1</p>
+        <p>El módulo <code>jni</code> compila código C++ nativo con CMake. <span class="errcode">[CXX1300] CMake '3.22.1' was not found</span></p>
+        <div class="fix"><b>fix</b><code>android.exe sdk install "cmake/3.22.1"</code> (trae también <code>ninja</code>).</div>
+      </li>
+      <li data-n="7">
+        <p class="t-title"><code>record</code> 5.2.1 con dependencias internas rotas</p>
+        <p>pub resolvía <code>record_linux 0.7.2</code> (viejo) contra <code>record_platform_interface 1.6.0</code> (nuevo) → firma de método incompatible al compilar el código Dart.</p>
+        <div class="fix"><b>fix</b><code>pubspec.yaml</code> → <code>record: ^6.0.0</code> (resuelve a 6.2.1, conjunto coherente). La API que usa la app no cambia.</div>
+      </li>
+      <li data-n="8">
+        <p class="t-title"><code>zonedSchedule</code> exige un parámetro</p>
+        <p>En <code>flutter_local_notifications</code> 18.x, <code>uiLocalNotificationDateInterpretation</code> sigue siendo obligatorio (se quitó en la 19).</p>
+        <div class="fix"><b>fix</b>Pasar <code>UILocalNotificationDateInterpretation.absoluteTime</code>.</div>
+      </li>
+    </ol>
+
+    <p><strong>Verificación.</strong> <code>flutter build apk --debug</code> ✓. Instalado en un emulador Pixel / Android 15. Probado y funcionando: lista de notas por fecha, FAB → grabación (audio + timer + estado), guardar → nota en SQLite, <strong>persiste al cerrar y reabrir la app</strong>, pantalla de detalle.</p>
+
+    <h3>Sesión 2 · Arreglar la transcripción</h3>
+    <p><strong>Síntoma:</strong> la transcripción salía vacía y sin explicación.</p>
+
+    <h4>Mejoras de robustez en el código</h4>
+    <ol class="timeline">
+      <li data-n="1">
+        <p class="t-title">Resolución de idioma con <em>fallback</em></p>
+        <p>Antes: <code>localeId: 'es_ES'</code> fijo. Ahora <code>speech_service.dart</code> consulta <code>_speech.locales()</code> y elige el mejor disponible: <code>es_ES</code> → cualquier <code>es_*</code> → idioma del sistema → <code>en_*</code> → el primero. Expone <code>resolvedLocaleId</code>, añade callbacks <code>onError</code>, envuelve <code>listen()</code> en <code>try/catch</code> y registra un log de diagnóstico en debug.</p>
+      </li>
+      <li data-n="2">
+        <p class="t-title">Feedback honesto en pantalla</p>
+        <p>Antes: si el dictado fallaba, el recuadro quedaba vacío. Ahora <code>record_screen.dart</code> muestra un aviso que traduce el estado real a lenguaje claro (no disponible / sin idioma instalado / error concreto) y deja seguir grabando solo el audio.</p>
+      </li>
+      <li data-n="3">
+        <p class="t-title">Auto-reanudación de la sesión de dictado</p>
+        <p><code>speech_to_text</code> cierra la sesión tras ~30&nbsp;s de silencio o al fijar un resultado. Antes la transcripción se moría en silencio. Ahora se reabre con 700&nbsp;ms de retraso y se rinde tras 3 errores seguidos o un error fatal. <span class="ref">(Un intento intermedio reabría sin retraso y provocó un bucle de <code>error_too_many_requests</code> — corregido con el <em>debounce</em> y un tope de reintentos.)</span></p>
+      </li>
+      <li data-n="4">
+        <p class="t-title">Convivencia entre grabar y transcribir</p>
+        <p><code>record</code> por defecto <strong>pausaba</strong> la grabación al cederle el foco de audio al reconocedor del sistema. <code>audio_service.dart</code> ahora usa <code>RecordConfig(audioInterruption: none, androidConfig: AndroidRecordConfig(audioSource: mic, manageBluetooth: false))</code> para que el archivo y la transcripción funcionen a la vez en un teléfono real.</p>
+      </li>
+    </ol>
+
+    <h4>Por qué el emulador no transcribe <span class="ref">(es infraestructura del emulador, no el código)</span></h4>
+    <ol class="timeline">
+      <li data-n="1">
+        <p class="t-title">El paquete de voz estaba deshabilitado</p>
+        <p><code>com.google.android.tts</code> tenía <code>enabled=0</code>, así que el <code>RecognitionService</code> por defecto no podía enlazarse. <span class="errcode">Bind to system recognition service failed with error 10</span></p>
+        <div class="fix"><b>fix</b><code>adb shell pm enable com.google.android.tts</code></div>
+      </li>
+      <li data-n="2">
+        <p class="t-title">El emulador silencia el micrófono</p>
+        <p>El emulador pone la entrada de audio en cero salvo que se arranque con <code>-allow-host-audio</code> («Otherwise, zeroes out audio»). Se relanzó con esa opción, que enruta el micrófono del PC.</p>
+      </li>
+      <li data-n="3">
+        <p class="t-title">Falta el modelo de voz y falta cuenta Google</p>
+        <p>El modelo offline <code>es-ES</code> no está descargado, y el reconocedor online devuelve <span class="errcode">HTTP 401</span>. Los dos caminos exigen <strong>iniciar sesión con una cuenta de Google en el emulador</strong> («Sign in to make the Google Assistant yours»). Sin cuenta, no hay reconocimiento — y esa cuenta es tuya, no la pone el asistente.</p>
+      </li>
+    </ol>
+
+    <div class="note"><strong>Cómo probar la voz de verdad.</strong> Opción A (recomendada): <code>flutter run</code> con tu teléfono conectado por USB — ya tiene cuenta Google, español y stack de voz completo; abre Notify, toca el micrófono y habla. Opción B: en el emulador, añade tu cuenta Google, descarga «Offline speech recognition → Español (España)», relanza con <code>-allow-host-audio</code> y habla al micrófono del PC.</div>
+
+    <h3>Archivos modificados</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Archivo</th><th>Sesión</th><th>Cambio</th></tr></thead>
+        <tbody>
+          <tr><td><code>lib/services/speech_service.dart</code></td><td>2</td><td>Reescrito: <em>fallback</em> de idioma, manejo de errores, diagnóstico</td></tr>
+          <tr><td><code>lib/screens/record_screen.dart</code></td><td>2</td><td>Aviso de estado, auto-reanudación con <em>backoff</em>, fallo de audio no fatal</td></tr>
+          <tr><td><code>lib/services/audio_service.dart</code></td><td>2</td><td><code>RecordConfig</code> para convivir con el reconocedor</td></tr>
+          <tr><td><code>lib/widgets/pulsing_mic.dart</code></td><td>2</td><td><code>withOpacity</code> → <code>withValues</code></td></tr>
+          <tr><td><code>lib/services/notification_service.dart</code></td><td>1</td><td><code>uiLocalNotificationDateInterpretation</code></td></tr>
+          <tr><td><code>pubspec.yaml</code></td><td>1</td><td><code>record: ^6.0.0</code></td></tr>
+          <tr><td><code>android/app/build.gradle.kts</code></td><td>1</td><td>plugin Kotlin, desugaring, <code>ndkVersion</code> comentado</td></tr>
+          <tr><td><code>android/gradle.properties</code></td><td>1</td><td><code>android.builder.sdkDownload=false</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">Componentes del SDK que quedaron instalados y <strong>no hay que borrar</strong>: plataformas API 34 / 35 / 36, NDK 28.2.13676358 (r28c), CMake 3.22.1.</div>
+  </section>
+
+  <!-- ============ SECCIÓN 3 ============ -->
+  <section id="mejoras">
+    <div class="sec-head">
+      <span class="sec-num">C</span>
+      <h2>Mejoras propuestas</h2>
+    </div>
+    <p>Ordenadas por tema. La prioridad <span class="prio alta" style="font-size:.66rem">alta</span> marca lo que más valor aporta con menos esfuerzo sobre lo que ya existe. Las referencias son las funciones mejor valoradas en reseñas de apps consolidadas de notas de voz.</p>
+
+    <div class="imp-group">
+      <h3>Transcripción <span class="k">el corazón del producto</span></h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Editar el texto sincronizado con el audio</span><span class="prio alta">alta</span></div>
+        <p>Tocar una palabra salta a ese punto del audio; borrar texto recorta el audio. <span class="ref">Ref: <b>Google Recorder</b> — «removing words from the transcript automatically cuts the audio file».</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Resumen automático con IA</span><span class="prio alta">alta</span></div>
+        <p>Puntos clave y lista de tareas/acciones a partir de la nota; tocar un punto salta al pasaje. <span class="ref">Ref: <b>Otter.ai</b> (smart summaries), Luma, Notta.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Transcripción 100% en el dispositivo</span><span class="prio media">media</span></div>
+        <p>Opción <code>onDevice: true</code> en <code>SpeechListenOptions</code> para privacidad y uso sin conexión. <span class="ref">Ref: <b>Google Recorder</b>, Apple Voice Memos, Luma — «transcribe entirely on-device».</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Identificación de hablantes</span><span class="prio media">media</span></div>
+        <p>Etiquetar «Hablante 1 / 2» en entrevistas y reuniones. <span class="ref">Ref: <b>Otter.ai</b>.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Multi-idioma, autodetección y traducción</span><span class="prio media">media</span></div>
+        <p>Elegir idioma por nota; traducir la transcripción. <span class="ref">Ref: <b>Notta</b> — 58 idiomas, transcripción bilingüe.</span></p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Captura y grabación <span class="k">reducir la fricción</span></h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Pausar y reanudar la grabación</span><span class="prio alta">alta</span></div>
+        <p>Hoy es de una sola toma. Es la carencia más notoria frente a cualquier grabadora. <span class="ref">Ref: prácticamente todas.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Grabación en segundo plano</span><span class="prio alta">alta</span></div>
+        <p>Seguir grabando con la pantalla apagada o en otra app (foreground service + notificación persistente). <span class="ref">Ref: <b>Google Recorder</b>, Otter.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Marcadores durante la grabación</span><span class="prio media">media</span></div>
+        <p>Un botón que deja una marca en la línea de tiempo para volver luego a ese momento. <span class="ref">Ref: <b>Google Recorder</b> (smart tags en la onda), Otter.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Importar un audio existente</span><span class="prio baja">baja</span></div>
+        <p>Elegir un archivo del teléfono y transcribirlo. <span class="ref">Ref: <b>Notta</b>, Otter.</span></p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Organización <span class="k">encontrar la nota</span></h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Búsqueda de texto completo</span><span class="prio alta">alta</span></div>
+        <p>Buscar palabras y frases en todas las transcripciones (SQLite FTS5). <span class="ref">Ref: <b>Google Recorder</b> — «search across all your recordings».</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Carpetas, etiquetas y Favoritos</span><span class="prio media">media</span></div>
+        <p>Una estrella para marcar favoritas y una sección arriba del todo. <span class="ref">Ref: <b>Google Recorder</b> — sección Favoritos sincronizada con la web.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Papelera con deshacer</span><span class="prio media">media</span></div>
+        <p><em>Soft-delete</em> con restauración durante 30 días en vez de borrado directo; al vaciar, borrar también el <code>.m4a</code> huérfano.</p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Reproducción</h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Onda de audio con scrubbing y velocidad</span><span class="prio media">media</span></div>
+        <p>Forma de onda para navegar el audio y control de velocidad 0.5×–2×; saltar silencios. <span class="ref">Ref: <b>Google Recorder</b>, Apple Voice Memos.</span></p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Recordatorios y notificaciones</h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Acciones en la notificación</span><span class="prio media">media</span></div>
+        <p>Botones «Posponer», «Hecho», «Abrir» directamente en el aviso.</p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Recordatorios recurrentes y zona horaria</span><span class="prio media">media</span></div>
+        <p>Repetición diaria/semanal (<code>matchDateTimeComponents</code>) y zona horaria del dispositivo con <code>flutter_timezone</code> (hoy se agenda por instante absoluto, suficiente para no-recurrentes).</p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Sincronización y respaldo</h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Exportar y compartir</span><span class="prio alta">alta</span></div>
+        <p>Texto (<code>.txt</code>/<code>.md</code>), audio y PDF; botón compartir del sistema. <span class="ref">Ref: <b>Otter</b> (share transcripts), <b>Google Recorder</b> (recorder.google.com).</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Copia en la nube</span><span class="prio baja">baja</span></div>
+        <p>Backup y sincronización entre dispositivos (Firebase / Supabase / Drive).</p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Privacidad y calidad</h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Bloqueo con biometría y cifrado</span><span class="prio media">media</span></div>
+        <p>Huella/rostro para abrir la app; cifrar la base y los archivos de audio (SQLCipher).</p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>UX y pulido</h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Acción rápida «grabar ahora»</span><span class="prio media">media</span></div>
+        <p>Widget de pantalla de inicio, atajo en la pantalla de bloqueo, <em>quick tile</em>. <span class="ref">Ref: <b>Braintoss</b> («just press record»), <b>Google Recorder</b>.</span></p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Onboarding, estados vacíos y accesibilidad</span><span class="prio media">media</span></div>
+        <p>Presentación breve de permisos, mejores pantallas vacías, etiquetas semánticas y tamaños de toque para lector de pantalla.</p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Internacionalización real e interruptor de tema</span><span class="prio baja">baja</span></div>
+        <p>Textos con <code>flutter_localizations</code>/ARB (hoy están fijos en español); elegir tema claro/oscuro a mano (hoy sigue al sistema).</p>
+      </div>
+    </div>
+
+    <div class="imp-group">
+      <h3>Arquitectura <span class="k">deuda técnica</span></h3>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Gestión de estado y capa de datos</span><span class="prio media">media</span></div>
+        <p>Riverpod o Bloc en vez de <code>setState</code>; patrón repositorio + inyección de dependencias; migraciones de esquema SQLite versionadas; permisos con <code>permission_handler</code> y pantalla de «permiso denegado permanentemente → ajustes».</p>
+      </div>
+      <div class="imp">
+        <div class="imp-top"><span class="imp-name">Tests</span><span class="prio media">media</span></div>
+        <p>Unitarios de los servicios (mock del canal de plataforma), de widget para las pantallas, y de integración del flujo grabar → guardar → listar.</p>
+      </div>
+    </div>
+
+    <div class="sources">
+      <p>Fuentes sobre funciones mejor valoradas en apps de referencia:</p>
+      <ul>
+        <li><a href="https://lumanote.org/blog/voice-note-apps-guide">Best Voice Note Apps in 2026: 7 Tested with AI Transcription — Luma</a></li>
+        <li><a href="https://www.bgr.com/2184589/cool-features-google-pixel-recorder-app/">Cool features of the Google Pixel Recorder app — BGR</a></li>
+        <li><a href="https://9to5google.com/2023/11/02/pixel-recorder-favorites/">Google updates Pixel Recorder with Favorites — 9to5Google</a></li>
+        <li><a href="https://otter.ai/features">Otter.ai — Voice Meeting &amp; Real-time Transcription Features</a></li>
+        <li><a href="https://www.notta.ai/en/blog/otter-ai-review">Otter.ai Review 2026 — Notta</a></li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('themebtn');
+    var root = document.documentElement;
+    function current() {
+      var t = root.getAttribute('data-theme');
+      if (t) return t;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    try {
+      var saved = localStorage.getItem('notify-bitacora-theme');
+      if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+    } catch (e) {}
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('notify-bitacora-theme', next); } catch (e) {}
+    });
+  })();
+</script>
